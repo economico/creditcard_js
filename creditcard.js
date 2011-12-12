@@ -1,7 +1,7 @@
 // Copyright (c) 2008 Thomas Fuchs
 // http://script.aculo.us/thomas
 //
-// New version (c) 2011 PicoMoney Company
+// Updated version by Pelle Braendgaard, PicoMoney
 // http://picomoney.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -66,7 +66,11 @@ var CreditCard = {
     return (sum % 10) == 0;
   },
   isTestNumber: function(number){
-    return _.include(CreditCard.TEST_NUMBERS, CreditCard.strip(number));
+    var normalized = CreditCard.strip(number);
+    for (var i in CreditCard.TEST_NUMBERS)
+      if (normalized == CreditCard.TEST_NUMBERS[i])
+        return true
+    return false
   },
   strip: function(number) {
     return number.replace(/\s/g,'');
@@ -75,11 +79,19 @@ var CreditCard = {
     for(card in CreditCard.CARDS)
       if(CreditCard['is'+card](number)) return card;
   },
+  isVisa: function(number) {
+    return CreditCard.CARDS['Visa'].test(CreditCard.strip(number));
+  },
+  isMasterCard: function(number) {
+    return CreditCard.CARDS['MasterCard'].test(CreditCard.strip(number));
+  },
+  isDinersClub: function(number) {
+    return CreditCard.CARDS['DinersClub'].test(CreditCard.strip(number));
+  },
+  isAmex: function(number) {
+    return CreditCard.CARDS['Amex'].test(CreditCard.strip(number));
+  },
+  isDiscover: function(number) {
+    return CreditCard.CARDS['Discover'].test(CreditCard.strip(number));
+  }
 };
-
-(function(){
-  for(var card in CreditCard.CARDS)
-    CreditCard['is'+card] = _.bind(function(card, number){
-      return CreditCard.CARDS[card].test(CreditCard.strip(number));
-    },{},card);
-})();

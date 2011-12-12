@@ -1,8 +1,6 @@
 This was extracted from http://letsfreckle.com.
 
-This version was converted to use underscore by http://picomoney.com
-
-You need a version of the underscore JavaScript framework.
+This version was converted to remove any dependencies by http://picomoney.com
 
     CreditCard.validate('1111 2222 3333 4444') # -> true/false
 

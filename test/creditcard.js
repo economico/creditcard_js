@@ -37,9 +37,10 @@ $(document).ready(function() {
       '6011000990139424', '5555555555554444', '5105105105105100',
       '4111111111111111', '4012888888881881', '4222222222222'];
 
-    _(TEST_NUMBERS).each(function(number){
-      ok(CreditCard.isTestNumber(number));
-    });
+    for (var i in TEST_NUMBERS) {
+      ok(CreditCard.isTestNumber(TEST_NUMBERS[i]));
+    }
+      
 
     ok(!CreditCard.isTestNumber('1'));
   });

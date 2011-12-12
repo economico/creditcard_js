@@ -1,6 +1,9 @@
 // Copyright (c) 2008 Thomas Fuchs
 // http://script.aculo.us/thomas
-// 
+//
+// New version (c) 2011 PicoMoney Company
+// http://picomoney.com
+//
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -42,36 +45,41 @@ var CreditCard = {
     Amex: /^3[47][0-9]{13}$/,
     Discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/
   },
-  TEST_NUMBERS: $w('378282246310005 371449635398431 378734493671000 '+
-    '30569309025904 38520000023237 6011111111111117 '+
-    '6011000990139424 5555555555554444 5105105105105100 '+
-    '4111111111111111 4012888888881881 4222222222222'
-  ),
+  TEST_NUMBERS: ['378282246310005', '371449635398431', '378734493671000',
+    '30569309025904', '38520000023237', '6011111111111117',
+    '6011000990139424', '5555555555554444', '5105105105105100',
+    '4111111111111111', '4012888888881881', '4222222222222'
+  ],
   validate: function(number){
     return CreditCard.verifyLuhn10(number)
       && !!CreditCard.type(number)
       && !CreditCard.isTestNumber(number);
   },
   verifyLuhn10: function(number){
-    return ($A(CreditCard.strip(number)).reverse().inject(0,function(a,n,index){
-      return a + $A((parseInt(n) * [1,2][index%2]).toString())
-        .inject(0, function(b,o){ return b + parseInt(o) }) }) % 10 == 0);
+    var normalized = CreditCard.strip(number);
+    var sum = 0;
+    for (var i = 1 ; i <= (normalized.length ); i++  ) {      
+      var n = 1 * normalized[normalized.length - i];
+      var l = ( i % 2 == 0 ?  n * 2 : n );
+      sum += (l > 9 ? 1 + l % 10 : l);
+    }
+    return (sum % 10) == 0;
   },
   isTestNumber: function(number){
-    return CreditCard.TEST_NUMBERS.include(CreditCard.strip(number));
+    return _.include(CreditCard.TEST_NUMBERS, CreditCard.strip(number));
   },
   strip: function(number) {
-    return number.gsub(/\s/,'');
+    return number.replace(/\s/g,'');
   },
   type: function(number) {
     for(card in CreditCard.CARDS)
       if(CreditCard['is'+card](number)) return card;
-  }
+  },
 };
 
 (function(){
   for(var card in CreditCard.CARDS)
-    CreditCard['is'+card] = function(card, number){
+    CreditCard['is'+card] = _.bind(function(card, number){
       return CreditCard.CARDS[card].test(CreditCard.strip(number));
-    }.curry(card);
+    },{},card);
 })();
